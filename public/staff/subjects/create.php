@@ -2,20 +2,15 @@
 
 require_once('../../../private/initialize.php');
 
-if(isPostRequest()) {
+if (isPostRequest()) {
+    $subject = [];
+    $subject['menu_name'] = $_POST['menu_name'] ?? '';
+    $subject['position'] = $_POST['position'] ?? '';
+    $subject['visible'] = $_POST['visible'] ?? '';
 
-  // Handle form values sent by new.php
-
-  $menu_name = $_POST['menu_name'] ?? '';
-  $position = $_POST['position'] ?? '';
-  $visible = $_POST['visible'] ?? '';
-
-  echo "Form parameters<br />";
-  echo "Menu name: " . $menu_name . "<br />";
-  echo "Position: " . $position . "<br />";
-  echo "Visible: " . $visible . "<br />";
+    $result = insert_subject($subject);
+    $new_id = mysqli_insert_id($db);
+    redirectTo(urlFor('staff/subjects/show.php?id=' . $new_id));
 } else {
-  redirectTo(urlFor('/staff/subjects/new.php'));
+    redirectTo(urlFor('/staff/subjects/new.php'));
 }
-
-?>

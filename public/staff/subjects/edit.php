@@ -2,22 +2,23 @@
 
 if (!isset($_GET['id'])) {
     redirectTo(urlFor('staff/subjects/index.php'));
-} else {
-    $id = $_GET['id'];
 }
-$menu_name = '';
-$position = '';
-$visible = '';
+$id = $_GET['id'];
 
 if (isPostRequest()) {
-    $menu_name = $_POST['menu_name'] ?? '';
-    $position = $_POST['position'] ?? '';
-    $visible = $_POST['visible'] ?? '';
+    $subject = [];
+    $subject['id'] = $id;
+    $subject['menu_name'] = $_POST['menu_name'] ?? '';
+    $subject['position'] = $_POST['position'] ?? '';
+    $subject['visible'] = $_POST['visible'] ?? '';
 
-    echo 'Form parameters<br />';
-    echo 'Menu name: ' . $menu_name . '<br />';
-    echo 'Position:' . $position . '<br />';
-    echo 'Visible:' . $visible . '<br />';
+    $result = update_subject($subject);
+    redirectTo(urlFor('staff/subjects/show.php?id=' . $id));
+} else {
+    $subject = find_subject_by_id($id);
+    $subject_set = find_all_subjects();
+    $subject_count = mysqli_num_rows($subject_set);
+    mysqli_free_result($subject_set);
 }
 ?>
 
@@ -34,13 +35,22 @@ if (isPostRequest()) {
         <form action="<?php echo urlFor('/staff/subjects/edit.php?id=' . h(u($id))) ?>" method="post">
             <dl>
                 <dt><label for="menu_name">Menu Name</label></dt>
-                <dd><input id="menu_name" type="text" name="menu_name" value="<?php echo $menu_name ?>"/></dd>
+                <dd><input id="menu_name" type="text" name="menu_name" value="<?php echo h($subject['menu_name']) ?>"/>
+                </dd>
             </dl>
             <dl>
                 <dt><label for="position">Position</label></dt>
                 <dd>
                     <select id="position" name="position">
-                        <option value="1">1</option>
+                        <?php
+                            for($i = 1; $i <= $subject_count; $i++) {
+                                echo "<option value\"{$i}\"";
+                                if($subject['position'] == $i) {
+                                    echo " selected";
+                                }
+                                echo ">{$i}</option>";
+                            }
+                        ?>
                     </select>
                 </dd>
             </dl>
@@ -48,7 +58,9 @@ if (isPostRequest()) {
                 <dt><label for="visible">Visible</label></dt>
                 <dd>
                     <input type="hidden" name="visible" value="0"/>
-                    <input id="visible" type="checkbox" name="visible" value="1"/>
+                    <input id="visible" type="checkbox" name="visible" value="1" <?php if ($subject['visible'] == "1") {
+                        echo " checked";
+                    } ?>/>
                 </dd>
             </dl>
             <div id="operations">
