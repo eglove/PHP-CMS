@@ -13,20 +13,24 @@ if (isPostRequest()) {
     $page['content'] = $_POST['content'] ?? '';
 
     $result = insert_page($page);
-    $new_id = mysqli_insert_id($db);
-    redirectTo(urlFor('staff/pages/show.php?id=' . $new_id));
+    if ($result === true) {
+        $new_id = mysqli_insert_id($db);
+        redirectTo(urlFor('staff/pages/show.php?id=' . $new_id));
+    } else {
+        $errors = $result;
+    }
 } else {
-    $page_set = find_all_pages();
-    $page_count = mysqli_num_rows($page_set) + 1;
-    mysqli_free_result($page_set);
-
     $page = [];
     $page['subject_id'] = '';
     $page['menu_name'] = '';
-    $page['position'] = $page_count;
+    $page['position'] = '';
     $page['visible'] = '';
     $page['content'] = '';
 }
+
+$page_set = find_all_pages();
+$page_count = mysqli_num_rows($page_set) + 1;
+mysqli_free_result($page_set);
 ?>
 <?php include(SHARED_PATH . '/staffHeader.php'); ?>
 
@@ -37,28 +41,31 @@ if (isPostRequest()) {
     <div class="page new">
         <h1>Create Page</h1>
 
+        <?php echo display_errors($errors) ?>
+
         <form action="<?php echo urlFor('/staff/pages/new.php'); ?>" method="post">
             <dl>
                 <dt><label for="subject_id">Subject</label></dt>
                 <dd>
                     <select id="subject_id" name="subject_id">
                         <?php
-                            $subject_set = find_all_subjects();
-                            while ($subject = mysqli_fetch_assoc($subject_set)) {
-                                echo "<option value=\"" . h($subject['id']) . "\"";
-                                if($page["subject_id"] == $subject["id"]) {
-                                    echo " selected";
-                                }
-                                echo ">" . h($subject['menu_name']) . "</option>";
+                        $subject_set = find_all_subjects();
+                        while ($subject = mysqli_fetch_assoc($subject_set)) {
+                            echo "<option value=\"" . h($subject['id']) . "\"";
+                            if ($page["subject_id"] == $subject["id"]) {
+                                echo " selected";
                             }
-                            mysqli_free_result($subject_set);
+                            echo ">" . h($subject['menu_name']) . "</option>";
+                        }
+                        mysqli_free_result($subject_set);
                         ?>
                     </select>
                 </dd>
             </dl>
             <dl>
                 <dt><label for="menu_name">Page Name</label></dt>
-                <dd><input id="menu_name" type="text" name="menu_name" value="<?php echo h($page['menu_name']) ?>"/></dd>
+                <dd><input id="menu_name" type="text" name="menu_name" value="<?php echo h($page['menu_name']) ?>"/>
+                </dd>
             </dl>
             <dl>
                 <dt><label for="position">Position</label></dt>
@@ -88,7 +95,8 @@ if (isPostRequest()) {
             <dl>
                 <dt><label for="content">Content</label></dt>
                 <dd>
-                    <textarea id="content" name="content" cols="45" rows="10"><?php echo h($page['content']); ?></textarea>
+                    <textarea id="content" name="content" cols="45"
+                              rows="10"><?php echo h($page['content']); ?></textarea>
                 </dd>
             </dl>
             <div id="operations">

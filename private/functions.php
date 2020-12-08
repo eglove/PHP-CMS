@@ -49,3 +49,19 @@ function isGetRequest()
 {
     return $_SERVER['REQUEST_METHOD'] == 'GET';
 }
+
+function display_errors($errors = array()): string
+{
+    $output = '';
+    if (!empty($errors)) {
+        $output .= "<div class=\"errors\">"
+            . "Please fix the following errors:"
+            . "<ul>";
+        foreach ($errors as $error) {
+            $output .= "<li>" . h($error) . "</li>";
+        }
+        $output .= "</ul>"
+            . "</div>";
+    }
+    return $output;
+}

@@ -16,13 +16,18 @@ if (isPostRequest()) {
     $page['content'] = $_POST['content'] ?? '';
 
     $result = update_page($page);
-    redirectTo(urlFor('staff/pages/show.php?id=' . $id));
+    if ($result === true) {
+        redirectTo(urlFor('staff/pages/show.php?id=' . $id));
+    } else {
+        $errors = $result;
+    }
 } else {
     $page = find_page_by_id($id);
-    $page_set = find_all_pages();
-    $page_count = mysqli_num_rows($page_set);
-    mysqli_free_result($page_set);
 }
+
+$page_set = find_all_pages();
+$page_count = mysqli_num_rows($page_set);
+mysqli_free_result($page_set);
 ?>
 
 <?php $page_title = 'Edit Page'; ?>
@@ -34,6 +39,8 @@ if (isPostRequest()) {
 
     <div class="page edit">
         <h1>Edit Page</h1>
+
+        <?php echo display_errors($errors); ?>
 
         <form action="<?php echo urlFor('/staff/pages/edit.php?id=' . h(u($id))) ?>" method="post">
             <dl>
@@ -87,7 +94,8 @@ if (isPostRequest()) {
             <dl>
                 <dt><label for="content">Content</label></dt>
                 <dd>
-                    <textarea id="content" name="content" cols="60" rows="10"><?php echo h($page['content']); ?></textarea>
+                    <textarea id="content" name="content" cols="60"
+                              rows="10"><?php echo h($page['content']); ?></textarea>
                 </dd>
             </dl>
             <div id="operations">
