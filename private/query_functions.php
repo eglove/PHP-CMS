@@ -37,7 +37,7 @@ function insert_subject($subject)
         . "(menu_name, position, visible) "
         . "values ("
         . "'" . db_escape($db, $subject['menu_name']) . "',"
-        . "'" . db_escape($db,$subject['position']) . "',"
+        . "'" . db_escape($db, $subject['position']) . "',"
         . "'" . db_escape($db, $subject['visible']) . "'"
         . ")";
 
@@ -151,12 +151,25 @@ function find_page_by_id($id): ?array
     return $page;
 }
 
+function find_pages_by_subject_id($subject_id)
+{
+    global $db;
+
+    $sql = "select * from pages "
+        . "where subject_id = '" . db_escape($db, $subject_id) . "' "
+        . "order by position";
+    $result = mysqli_query($db, $sql);
+    confirm_result_set($result);
+
+    return $result;
+}
+
 function insert_page($page)
 {
     global $db;
 
     $errors = validate_page($page);
-    if(!empty($errors)) {
+    if (!empty($errors)) {
         return $errors;
     }
 
@@ -185,7 +198,7 @@ function update_page($page)
     global $db;
 
     $errors = validate_page($page);
-    if(!empty($errors)) {
+    if (!empty($errors)) {
         return $errors;
     }
 
@@ -242,7 +255,7 @@ function validate_page($page): array
         $errors[] = "Name must be between 2 and 255 characters.";
     }
     $current_id = $page['id'] ?? '0';
-    if(!has_unique_page_menu_name($page['menu_name'], $current_id)) {
+    if (!has_unique_page_menu_name($page['menu_name'], $current_id)) {
         $errors[] = "Menu name must be unique.";
     }
 
