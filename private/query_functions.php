@@ -15,7 +15,7 @@ function find_subject_by_id($id): ?array
     global $db;
 
     $sql = "select * from subjects ";
-    $sql .= "where id = '" . $id . "'";
+    $sql .= "where id = '" . db_escape($db, $id) . "'";
     $result = mysqli_query($db, $sql);
     confirm_result_set($result);
 
@@ -36,9 +36,9 @@ function insert_subject($subject)
     $sql = "insert into subjects "
         . "(menu_name, position, visible) "
         . "values ("
-        . "'" . $subject['menu_name'] . "',"
-        . "'" . $subject['position'] . "',"
-        . "'" . $subject['visible'] . "'"
+        . "'" . db_escape($db, $subject['menu_name']) . "',"
+        . "'" . db_escape($db,$subject['position']) . "',"
+        . "'" . db_escape($db, $subject['visible']) . "'"
         . ")";
 
     $result = mysqli_query($db, $sql);
@@ -61,10 +61,10 @@ function update_subject($subject)
     }
 
     $sql = "update subjects set "
-        . "menu_name='" . $subject['menu_name'] . "', "
-        . "position='" . $subject['position'] . "', "
-        . "visible='" . $subject['visible'] . "' "
-        . "where id='" . $subject['id'] . "' "
+        . "menu_name='" . db_escape($db, $subject['menu_name']) . "', "
+        . "position='" . db_escape($db, $subject['position']) . "', "
+        . "visible='" . db_escape($db, $subject['visible']) . "' "
+        . "where id='" . db_escape($db, $subject['id']) . "' "
         . "limit 1";
 
     $result = mysqli_query($db, $sql);
@@ -81,7 +81,7 @@ function delete_subject($id): bool
 {
     global $db;
     $sql = "delete from subjects "
-        . "where id='" . $id . "' "
+        . "where id='" . db_escape($db, $id) . "' "
         . "limit 1";
 
     $result = mysqli_query($db, $sql);
@@ -142,7 +142,7 @@ function find_page_by_id($id): ?array
     global $db;
 
     $sql = "select * from pages "
-        . "where id = '" . $id . "'";
+        . "where id = '" . db_escape($db, $id) . "'";
     $result = mysqli_query($db, $sql);
     confirm_result_set($result);
 
@@ -163,11 +163,11 @@ function insert_page($page)
     $sql = "insert into pages "
         . "(subject_id, menu_name, position, visible, content) "
         . "values ("
-        . "'" . $page['subject_id'] . "', "
-        . "'" . $page['menu_name'] . "', "
-        . "'" . $page['position'] . "', "
-        . "'" . $page['visible'] . "', "
-        . "'" . $page['content'] . "'"
+        . "'" . db_escape($db, $page['subject_id']) . "', "
+        . "'" . db_escape($db, $page['menu_name']) . "', "
+        . "'" . db_escape($db, $page['position']) . "', "
+        . "'" . db_escape($db, $page['visible']) . "', "
+        . "'" . db_escape($db, $page['content']) . "'"
         . ")";
 
     $result = mysqli_query($db, $sql);
@@ -190,12 +190,12 @@ function update_page($page)
     }
 
     $sql = "update pages set "
-        . "subject_id='" . $page['subject_id'] . "', "
-        . "menu_name='" . $page['menu_name'] . "', "
-        . "position='" . $page['position'] . "', "
-        . "visible='" . $page['visible'] . "', "
-        . "content='" . $page['content'] . "' "
-        . "where id='" . $page['id'] . "' "
+        . "subject_id='" . db_escape($db, $page['subject_id']) . "', "
+        . "menu_name='" . db_escape($db, $page['menu_name']) . "', "
+        . "position='" . db_escape($db, $page['position']) . "', "
+        . "visible='" . db_escape($db, $page['visible']) . "', "
+        . "content='" . db_escape($db, $page['content']) . "' "
+        . "where id='" . db_escape($db, $page['id']) . "' "
         . "limit 1";
 
     $result = mysqli_query($db, $sql);
@@ -212,7 +212,7 @@ function delete_page($id): bool
 {
     global $db;
     $sql = "delete from pages "
-        . "where id='" . $id . "' "
+        . "where id='" . db_escape($db, $id) . "' "
         . "limit 1";
 
     $result = mysqli_query($db, $sql);
